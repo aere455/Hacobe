@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Scientific Calculator</title>
+    <style>
+        :root {
+            --bg-color: #e0e5ec;
+            --text-color: #333;
+            --shadow-color: #a3b1c6;
+            --highlight-color: #ffffff;
+            --accent-color: #4caf50;
+            --error-color: #f44336;
+            --function-color: #2196f3;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+        }
+
+        .calculator {
+            background-color: var(--bg-color);
+            border-radius: 30px;
+            box-shadow: 
+                20px 20px 60px var(--shadow-color),
+                -20px -20px 60px var(--highlight-color);
+            padding: 30px;
+            width: 400px;
+        }
+
+        .display-container {
+            margin-bottom: 25px;
+        }
+
+        .display, .function-display {
+            background-color: var(--bg-color);
+            border-radius: 15px;
+            box-shadow: 
+                inset 5px 5px 10px var(--shadow-color),
+                inset -5px -5px 10px var(--highlight-color);
+            padding: 20px;
+            text-align: right;
+            overflow: hidden;
+        }
+
+        .display {
+            font-size: 2em;
+            height: 60px;
+        }
+
+        .function-display {
+            font-size: 1em;
+            height: 30px;
+            margin-top: 10px;
+            color: var(--function-color);
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            background-color: var(--bg-color);
+            border: none;
+            border-radius: 10px;
+            box-shadow: 
+                5px 5px 10px var(--shadow-color),
+                -5px -5px 10px var(--highlight-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            box-shadow: 
+                2px 2px 5px var(--shadow-color),
+                -2px -2px 5px var(--highlight-color);
+        }
+
+        button:active {
+            box-shadow: 
+                inset 2px 2px 5px var(--shadow-color),
+                inset -2px -2px 5px var(--highlight-color);
+        }
+
+        .operator { color: #ff5722; }
+        .function { color: var(--function-color); }
+
+        #equals {
+            grid-column: span 2;
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        #clear {
+            grid-column: span 2;
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .toggle-btn {
+            background-color: var(--bg-color);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 
+                5px 5px 10px var(--shadow-color),
+                -5px -5px 10px var(--highlight-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .dark-mode {
+            --bg-color: #2d3436;
+            --text-color: #dfe6e9;
+            --shadow-color: #1e272e;
+            --highlight-color: #3d4852;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="toggle-container">
+            <button class="toggle-btn active" id="degreeBtn">Degree</button>
+            <button class="toggle-btn" id="radianBtn">Radian</button>
+            <button class="toggle-btn" id="darkModeToggle">🌓</button>
+        </div>
+        <div class="display-container">
+            <div class="display" id="display">0</div>
+            <div class="function-display" id="functionDisplay"></div>
+        </div>
+        <div class="buttons">
+            <button class="function" onclick="clearDisplay()">C</button>
+            <button class="function" onclick="appendToDisplay('(')">(</button>
+            <button class="function" onclick="appendToDisplay(')')">)</button>
+            <button class="function" onclick="appendToDisplay('%')">%</button>
+            <button class="operator" onclick="appendToDisplay('/')">/</button>
+            
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button class="function" onclick="trigFunction('sin')">sin</button>
+            <button class="operator" onclick="appendToDisplay('*')">*</button>
+            
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button class="function" onclick="trigFunction('cos')">cos</button>
+            <button class="operator" onclick="appendToDisplay('-')">-</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button class="function" onclick="trigFunction('tan')">tan</button>
+            <button class="operator" onclick="appendToDisplay('+')">+</button>
+            
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button class="function" onclick="logFunction('log')">log</button>
+            <button class="function" onclick="appendToDisplay('Math.sqrt(')">√</button>
+            <button class="function" onclick="appendToDisplay('Math.PI')">π</button>
+            
+            <button id="clear" onclick="clearDisplay()">Clear</button>
+            <button class="function" onclick="appendToDisplay('Math.pow(')">x^y</button>
+            <button id="equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById('display');
+        const functionDisplay = document.getElementById('functionDisplay');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const degreeBtn = document.getElementById('degreeBtn');
+        const radianBtn = document.getElementById('radianBtn');
+        let isDegreeMode = true;
+
+        function appendToDisplay(value) {
+            if (display.innerText === '0') {
+                display.innerText = value;
+            } else {
+                display.innerText += value;
+            }
+        }
+
+        function clearDisplay() {
+            display.innerText = '0';
+            functionDisplay.innerText = '';
+        }
+
+        function trigFunction(func) {
+            let angle = parseFloat(display.innerText);
+            if (isDegreeMode) {
+                angle = angle * (Math.PI / 180); // Convert to radians
+            }
+            let result;
+            switch(func) {
+                case 'sin':
+                    result = Math.sin(angle);
+                    break;
+                case 'cos':
+                    result = Math.cos(angle);
+                    break;
+                case 'tan':
+                    result = Math.tan(angle);
+                    break;
+            }
+            display.innerText = result.toFixed(8);
+            functionDisplay.innerText = `${func}(${isDegreeMode ? angle * (180 / Math.PI) : angle})`;
+        }
+
+        function logFunction(func) {
+            let value = parseFloat(display.innerText);
+            let result;
+            switch(func) {
+                case 'log':
+                    result = Math.log10(value);
+                    break;
+                case 'ln':
+                    result = Math.log(value);
+                    break;
+            }
+            display.innerText = result.toFixed(8);
+            functionDisplay.innerText = `${func}(${value})`;
+        }
+
+        function calculate() {
+            try {
+                let result = eval(display.innerText);
+                display.innerText = Number.isInteger(result) ? result : result.toFixed(8);
+                functionDisplay.innerText = '';
+            } catch (error) {
+                display.innerText = 'Error';
+                functionDisplay.innerText = '';
+            }
+        }
+
+        degreeBtn.addEventListener('click', () => {
+            isDegreeMode = true;
+            degreeBtn.classList.add('active');
+            radianBtn.classList.remove('active');
+        });
+
+        radianBtn.addEventListener('click', () => {
+            isDegreeMode = false;
+            radianBtn.classList.add('active');
+            degreeBtn.classList.remove('active');
+        });
+
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+            if (/[0-9]/.test(key)) {
+                appendToDisplay(key);
+            } else if (['+', '-', '*', '/', '.', '(', ')'].includes(key)) {
+                appendToDisplay(key);
+            } else if (key === 'Enter') {
+                calculate();
+            } else if (key === 'Backspace') {
+                display.innerText = display.innerText.slice(0, -1);
+                if (display.innerText === '') {
+                    display.innerText = '0';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
